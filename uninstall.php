@@ -27,6 +27,8 @@ $delete_site_data = static function () use ( $wpdb ) {
 	delete_option( 'mcsm_version' );
 };
 
+delete_site_transient( 'mcsm_github_release' );
+
 if ( is_multisite() ) {
 	$offset = 0;
 

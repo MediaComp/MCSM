@@ -15,6 +15,7 @@ class MCSM_Plugin {
 	 */
 	public static function init() {
 		add_action( MCSM_Audit_Log::CLEANUP_HOOK, array( 'MCSM_Audit_Log', 'cleanup' ) );
+		MCSM_Updater::init();
 
 		if ( get_option( 'mcsm_version' ) !== MCSM_VERSION ) {
 			MCSM_Activator::activate();
