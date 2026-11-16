@@ -2,7 +2,7 @@
 /**
  * Plugin Name: MCSM
  * Description: Manage trusted HTML, JavaScript, CSS, and PHP snippets with global or content-specific display rules.
- * Version: 1.4.1
+ * Version: 1.4.3
  * Author: Media Components LLC
  * Text Domain: mcsm
  * License: Proprietary - Media Components LLC Internal Use Only
@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'MCSM_VERSION', '1.4.1' );
+define( 'MCSM_VERSION', '1.4.3' );
 define( 'MCSM_PLUGIN_FILE', __FILE__ );
 define( 'MCSM_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'MCSM_PLUGIN_URL', plugin_dir_url( __FILE__ ) );

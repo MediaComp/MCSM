@@ -64,6 +64,10 @@ MCSM is proprietary software owned by Media Components LLC. Use is limited to au
 
 ## Changelog
 
+### 1.4.3
+
+- See the [release notes](https://github.com/MediaComp/MCSM/releases/tag/v1.4.3) for the list of changes.
+
 ### 1.4.1
 
 - See the [release notes](https://github.com/MediaComp/MCSM/releases/tag/v1.4.1) for the list of changes.
