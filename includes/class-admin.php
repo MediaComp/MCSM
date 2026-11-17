@@ -303,7 +303,9 @@ class MCSM_Admin {
 			</form>
 			<form method="post">
 				<?php wp_nonce_field( 'mcsm_bulk_action', 'mcsm_bulk_nonce' ); ?>
-				<?php $list_table->display(); ?>
+				<div class="mcsm-list-table-scroll" role="region" aria-label="<?php esc_attr_e( 'Snippets', 'mcsm' ); ?>" tabindex="0">
+					<?php $list_table->display(); ?>
+				</div>
 			</form>
 		</div>
 		<?php
@@ -525,7 +527,7 @@ class MCSM_Admin {
 								<h2><?php esc_html_e( 'Shortcode', 'mcsm' ); ?></h2>
 								<?php if ( $id ) : ?>
 									<code class="mcsm-shortcode">[mc_snippet id="<?php echo absint( $id ); ?>"]</code>
-									<p class="description"><?php esc_html_e( 'Shortcodes respect status, device targeting, and visibility. Location and display rules are skipped because shortcode placement is manual.', 'mcsm' ); ?></p>
+									<p class="description"><?php esc_html_e( 'Set Location to Shortcode Only, then place this shortcode where you want the snippet to appear.', 'mcsm' ); ?></p>
 								<?php else : ?>
 									<p><?php esc_html_e( 'Save the snippet to generate its shortcode.', 'mcsm' ); ?></p>
 								<?php endif; ?>

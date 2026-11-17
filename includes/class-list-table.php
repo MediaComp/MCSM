@@ -53,8 +53,8 @@ class MCSM_List_Table extends WP_List_Table {
 	public function get_columns() {
 		return array(
 			'cb'           => '<input type="checkbox" />',
-			'status'       => __( 'Status', 'mcsm' ),
 			'name'         => __( 'Snippet Name', 'mcsm' ),
+			'status'       => __( 'Status', 'mcsm' ),
 			'logged_in_only' => __( 'Visibility', 'mcsm' ),
 			'id'           => __( 'ID', 'mcsm' ),
 			'display_rule' => __( 'Display Rule', 'mcsm' ),
@@ -155,7 +155,7 @@ class MCSM_List_Table extends WP_List_Table {
 			'offset'   => ( $current_page - 1 ) * $per_page,
 		);
 
-		$this->_column_headers = array( $this->get_columns(), array(), $this->get_sortable_columns() );
+		$this->_column_headers = array( $this->get_columns(), array(), $this->get_sortable_columns(), 'name' );
 		$this->items           = $this->repository->query( $args );
 		$total_items           = $this->repository->count( $args );
 
@@ -235,6 +235,18 @@ class MCSM_List_Table extends WP_List_Table {
 			esc_attr( $label ),
 			absint( $item['id'] )
 		);
+	}
+
+	/**
+	 * The name column already includes row actions and the mobile toggle.
+	 *
+	 * @param array  $item Row.
+	 * @param string $column_name Column name.
+	 * @param string $primary Primary column name.
+	 * @return string
+	 */
+	protected function handle_row_actions( $item, $column_name, $primary ) {
+		return '';
 	}
 
 	/**
