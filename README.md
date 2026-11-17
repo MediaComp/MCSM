@@ -64,6 +64,10 @@ MCSM is proprietary software owned by Media Components LLC. Use is limited to au
 
 ## Changelog
 
+### Unreleased
+
+- Fixed the snippet table shrinking beside the search box, kept short column values on one line, and kept bulk actions, filters, and pagination outside horizontal scrolling.
+
 ### 1.4.4
 
 - See the [release notes](https://github.com/MediaComp/MCSM/releases/tag/v1.4.4) for the list of changes.

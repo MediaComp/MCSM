@@ -46,6 +46,27 @@ class MCSM_List_Table extends WP_List_Table {
 	}
 
 	/**
+	 * Wrap only the table in a scroll region, leaving both toolbars outside.
+	 *
+	 * WP_List_Table::display() renders the table between these two calls.
+	 *
+	 * @param string $which Toolbar position: top or bottom.
+	 */
+	protected function display_tablenav( $which ) {
+		if ( 'bottom' === $which ) {
+			echo '</div>';
+		}
+
+		parent::display_tablenav( $which );
+
+		if ( 'top' === $which ) {
+			?>
+			<div class="mcsm-list-table-scroll" role="region" aria-label="<?php esc_attr_e( 'Snippets', 'mcsm' ); ?>" tabindex="0">
+			<?php
+		}
+	}
+
+	/**
 	 * Define table columns.
 	 *
 	 * @return array

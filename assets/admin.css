@@ -1,4 +1,5 @@
 .mcsm-list-table-scroll {
+	clear: both;
 	max-width: 100%;
 	position: relative;
 }
@@ -48,6 +49,7 @@
 	.mcsm-list-table-scroll .column-type,
 	.mcsm-list-table-scroll .column-location,
 	.mcsm-list-table-scroll .column-devices {
+		white-space: nowrap;
 		width: 110px;
 	}
 

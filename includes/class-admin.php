@@ -303,9 +303,7 @@ class MCSM_Admin {
 			</form>
 			<form method="post">
 				<?php wp_nonce_field( 'mcsm_bulk_action', 'mcsm_bulk_nonce' ); ?>
-				<div class="mcsm-list-table-scroll" role="region" aria-label="<?php esc_attr_e( 'Snippets', 'mcsm' ); ?>" tabindex="0">
-					<?php $list_table->display(); ?>
-				</div>
+				<?php $list_table->display(); ?>
 			</form>
 		</div>
 		<?php
