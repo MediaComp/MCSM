@@ -6,7 +6,7 @@
 
 This is a separate, manual-only workflow. Pushes, tags, and other releases do not trigger it. Use a version higher than the current one. Published releases and existing unrelated tags are never overwritten. The release is marked **Latest** so WordPress sites can discover it.
 
-Optionally collect human-written changelog notes under `### Unreleased` at the top of the Changelog section in `README.md` before releasing. The workflow moves those notes into the new version entry. Otherwise, it adds a link to the GitHub release notes, which GitHub generates from repository history.
+Add release notes under `### Unreleased` at the top of the Changelog section in `README.md`. The workflow moves those notes into the new version entry and uses them for the GitHub release and the WordPress update dialog. When `Unreleased` is empty or absent, the workflow uses commit subjects since the previous version tag, excluding merge commits.
 
 If a run fails after pushing the version commit and tag, rerun it with the same version to finish attaching the package and publishing the draft, provided the default branch still carries that version. The workflow reuses the original tagged commit and preserves the tag and any published release.
 

@@ -3,6 +3,7 @@
 
 import argparse
 import re
+import subprocess
 import sys
 import zipfile
 from pathlib import Path, PurePosixPath
@@ -12,6 +13,7 @@ VERSION = re.compile(r"(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)")
 HEADER = re.compile(r"^( \* Version: )[\S]+[ \t]*$", re.MULTILINE)
 CONSTANT = re.compile(r"^(define\( 'MCSM_VERSION', ')[^']+(' \);)$", re.MULTILINE)
 CHANGELOG = re.compile(r"^## Changelog[ \t]*\n", re.MULTILINE)
+CHANGELOG_ENTRY = re.compile(r"^### ([^\n]+)\n(.*?)(?=^### |\Z)", re.MULTILINE | re.DOTALL)
 
 
 def normalize(value):
@@ -40,6 +42,19 @@ def changelog_start(readme):
     return matches[0].end()
 
 
+def changes_since(version, root):
+    history = subprocess.run(
+        ["git", "log", "--no-merges", "--format=%s", f"refs/tags/v{version}..HEAD", "--"],
+        cwd=root,
+        capture_output=True,
+        encoding="utf-8",
+    )
+    if history.returncode:
+        raise ValueError(f"Cannot read changes since v{version}. Fetch the tag or add notes under Unreleased.")
+    subjects = [line.strip() for line in history.stdout.splitlines() if line.strip()]
+    return "\n".join(f"- {subject}" for subject in subjects) or "No changes were recorded since the previous release."
+
+
 def prepare(version, root, resume=False):
     plugin_path = root / "mcsm.php"
     readme_path = root / "README.md"
@@ -48,33 +63,30 @@ def prepare(version, root, resume=False):
     current = plugin_version(source)
     start = changelog_start(readme)
     tail = readme[start:]
+    first = CHANGELOG_ENTRY.search(tail)
     if resume:
-        first = re.search(r"^### (.+)$", tail, re.MULTILINE)
-        if current != version or not first or first.group(1) != version:
+        if current != version or not first or first.group(1).strip() != version:
             raise ValueError("Existing release commit does not match the requested version/changelog.")
-        return
+        return first.group(2).strip()
 
     if tuple(map(int, version.split("."))) <= tuple(map(int, current.split("."))):
         raise ValueError(f"New version {version} must be higher than {current}.")
     if re.search(rf"^### {re.escape(version)}[ \t]*$", tail, re.MULTILINE):
         raise ValueError(f"Changelog already contains version {version}.")
 
-    notes = (
-        f"- See the [release notes](https://github.com/MediaComp/MCSM/releases/tag/v{version}) "
-        "for the list of changes."
-    )
-    unreleased = re.match(
-        r"\s*### Unreleased[ \t]*\n(.*?)(?=^### |\Z)", tail, re.MULTILINE | re.DOTALL
-    )
-    if unreleased:
-        notes = unreleased.group(1).strip() or notes
-        tail = tail[unreleased.end():]
+    notes = ""
+    if first and first.group(1).strip() == "Unreleased" and not tail[:first.start()].strip():
+        notes = first.group(2).strip()
+        tail = tail[first.end():]
+    if not notes:
+        notes = changes_since(current, root)
 
     source = HEADER.sub(lambda match: match.group(1) + version, source)
     source = CONSTANT.sub(lambda match: match.group(1) + version + match.group(2), source)
     readme = readme[:start] + f"\n### {version}\n\n{notes}\n\n" + tail.lstrip()
     plugin_path.write_text(source, encoding="utf-8")
     readme_path.write_text(readme, encoding="utf-8")
+    return notes
 
 
 def verify(version, package):
@@ -96,8 +108,8 @@ def verify(version, package):
         if plugin_version(archive.read("mcsm/mcsm.php").decode("utf-8")) != version:
             raise ValueError("Packaged plugin version does not match the release tag.")
         readme = archive.read("mcsm/README.md").decode("utf-8")
-        first = re.search(r"^### (.+)$", readme[changelog_start(readme):], re.MULTILINE)
-        if not first or first.group(1) != version:
+        first = CHANGELOG_ENTRY.search(readme[changelog_start(readme):])
+        if not first or first.group(1).strip() != version:
             raise ValueError("Packaged changelog does not match the release tag.")
 
 
@@ -121,7 +133,7 @@ def main():
         if args.command == "normalize":
             print(version)
         elif args.command == "prepare":
-            prepare(version, Path.cwd(), args.resume)
+            print(prepare(version, Path.cwd(), args.resume))
         else:
             verify(version, args.package)
     except (ValueError, OSError, zipfile.BadZipFile) as error:

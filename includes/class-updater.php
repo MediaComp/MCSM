@@ -99,10 +99,6 @@ class MCSM_Updater {
 			return $result;
 		}
 
-		$notes = '' !== trim( $release['notes'] )
-			? wpautop( esc_html( $release['notes'] ) )
-			: '<p>' . esc_html__( 'No release notes were published for this version.', 'mcsm' ) . '</p>';
-
 		return (object) array(
 			'name'          => 'MCSM',
 			'slug'          => self::slug(),
@@ -114,9 +110,33 @@ class MCSM_Updater {
 			'last_updated'  => $release['published_at'],
 			'download_link' => self::package_url( $release ),
 			'sections'      => array(
-				'changelog' => $notes,
+				'changelog' => self::format_release_notes( $release['notes'] ),
 			),
 		);
+	}
+
+	/**
+	 * Format release note text and top-level Markdown bullets for WordPress.
+	 *
+	 * @param string $notes Release body from GitHub.
+	 * @return string
+	 */
+	private static function format_release_notes( $notes ) {
+		$notes = preg_replace( '/^\*\*Full Changelog\*\*:[ \t]+https:\/\/github\.com\/\S+\/compare\/\S+[ \t]*\r?$/m', '', $notes );
+		$notes = trim( $notes );
+		if ( '' === $notes ) {
+			return '<p>' . esc_html__( 'No release notes were published for this version.', 'mcsm' ) . '</p>';
+		}
+
+		$notes = preg_replace_callback(
+			'/(?:^[-*+] [^\r\n]+(?:\r?\n|$))+/m',
+			static function ( $list ) {
+				preg_match_all( '/^[-*+] ([^\r\n]+)/m', $list[0], $items );
+				return '<ul><li>' . implode( '</li><li>', $items[1] ) . '</li></ul>' . "\n";
+			},
+			esc_html( $notes )
+		);
+		return wpautop( $notes );
 	}
 
 	/**
