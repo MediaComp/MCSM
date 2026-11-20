@@ -50,7 +50,7 @@ MCSM is proprietary software owned by Media Components LLC. Use is limited to au
 
 ## Changelog
 
-### Unreleased
+### 1.4.7
 
 - Show the changes for a new version in the WordPress update details.
 
